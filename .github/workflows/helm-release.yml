@@ -47,7 +47,7 @@ jobs:
         mkdir -p gh-pages/charts
         cp ks-gateway-autodns-server/helm-chart/*.tgz gh-pages/charts/
         cd gh-pages
-        helm repo index charts --url https://veater.github.io/ks-gateway-autodns/charts
+        helm repo index charts --url https://annopick.github.io/ks-gateway-autodns/charts
         
     - name: Commit and push changes
       run: |
