@@ -1,0 +1,22 @@
+apiVersion: v1
+entries:
+  ks-gateway-autodns-server:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-02-02T08:15:03.241018139Z"
+    description: A Helm chart for KubeSphere Gateway AutoDNS Server
+    digest: 4fd57fa281d02823f6869b1187cecb2f6a02e22a136498d28061d2fd20100aa0
+    keywords:
+    - kubesphere
+    - gateway
+    - autodns
+    - dns
+    - apisix
+    maintainers:
+    - name: veater
+    name: ks-gateway-autodns-server
+    type: application
+    urls:
+    - https://veater.github.io/ks-gateway-autodns/charts/ks-gateway-autodns-server-1.0.0.tgz
+    version: 1.0.0
+generated: "2026-02-02T08:15:03.239449606Z"
