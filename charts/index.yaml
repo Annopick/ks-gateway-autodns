@@ -3,9 +3,9 @@ entries:
   ks-gateway-autodns-server:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-02-02T10:09:26.410079499Z"
+    created: "2026-02-02T10:23:07.294619454Z"
     description: A Helm chart for KubeSphere Gateway AutoDNS Server
-    digest: 74a52a71321665096e82b59179e78f11391a52a139ad437a63bbc1e32b11291e
+    digest: b3709da82cbb5dc99741ee6c632fb6360090416f1ef1e8b33e31996729bad82e
     keywords:
     - kubesphere
     - gateway
@@ -19,4 +19,4 @@ entries:
     urls:
     - https://annopick.github.io/ks-gateway-autodns/charts/ks-gateway-autodns-server-1.0.0.tgz
     version: 1.0.0
-generated: "2026-02-02T10:09:26.409365124Z"
+generated: "2026-02-02T10:23:07.293885933Z"
