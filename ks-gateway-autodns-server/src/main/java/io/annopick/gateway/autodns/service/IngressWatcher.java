@@ -90,7 +90,7 @@ public class IngressWatcher {
 
     private void handleAddOrUpdate(String host, String ingressClassName) {
         try {
-            String rr = host.replace(properties.getHostSuffix(), "").replace(".", "-");
+            String rr = host.replace("." + properties.getAliyun().getDomain(), "");
             String svcName = ingressClassName.replace(properties.getIngressClassSuffix(), "");
             
             Service service = kubernetesClient.services()
