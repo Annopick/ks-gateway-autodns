@@ -35,7 +35,7 @@ spec:
         - sh
         - -c
         - |
-          until timeout 2 sh -c 'echo > /dev/tcp/{{ include "ks-gateway-autodns-server.fullname" . }}-mysql/3306' 2>/dev/null; do
+          until telnet {{ include "ks-gateway-autodns-server.fullname" . }}-mysql 3306 </dev/null 2>&1 | grep -qv "Connection refused\|trying"; do
             echo "Waiting for MySQL to be ready..."
             sleep 2
           done
