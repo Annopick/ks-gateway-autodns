@@ -1,2 +1,2 @@
-netifaces==0.11.0
+netifaces2==0.0.22
 requests==2.31.0

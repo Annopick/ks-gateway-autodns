@@ -8,6 +8,16 @@ import logging
 import requests
 from typing import Optional
 
+# Try to import netifaces, fall back to netifaces2 on Linux
+try:
+    import netifaces
+except ImportError:
+    try:
+        import netifaces2 as netifaces
+    except ImportError:
+        print("ERROR: Neither netifaces nor netifaces2 is installed")
+        sys.exit(1)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
@@ -21,8 +31,6 @@ def get_ipv6_address(interface: str) -> Optional[str]:
     Temporary addresses are used for privacy and change periodically.
     """
     try:
-        import netifaces
-        
         if not interface:
             logger.error("NETWORK_INTERFACE is not specified")
             return None
