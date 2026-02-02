@@ -5,13 +5,18 @@ on:
     branches:
       - main
     paths:
-      - 'ks-gateway-autodns-server/**'
+      - 'ks-gateway-autodns-server/src/**'
+      - 'ks-gateway-autodns-server/pom.xml'
+      - 'ks-gateway-autodns-server/Dockerfile'
       - '.github/workflows/build-server.yml'
   pull_request:
     branches:
       - main
     paths:
-      - 'ks-gateway-autodns-server/**'
+      - 'ks-gateway-autodns-server/src/**'
+      - 'ks-gateway-autodns-server/pom.xml'
+      - 'ks-gateway-autodns-server/Dockerfile'
+      - '.github/workflows/build-server.yml'
 
 jobs:
   build:

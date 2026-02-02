@@ -2,7 +2,8 @@ package io.annopick.gateway.autodns.service;
 
 import com.aliyun.alidns20150109.Client;
 import com.aliyun.alidns20150109.models.*;
-import com.aliyun.teaopenapi.models.Config;
+
+import com.aliyun.credentials.models.Config;
 import io.annopick.gateway.autodns.config.AutoDnsProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,18 @@ public class AliyunDnsService {
     public AliyunDnsService(AutoDnsProperties properties) {
         this.properties = properties;
         try {
-            Config config = new Config()
-                .setAccessKeyId(properties.getAliyun().getAccessKeyId())
-                .setAccessKeySecret(properties.getAliyun().getAccessKeySecret())
-                .setEndpoint("alidns." + properties.getAliyun().getRegionId() + ".aliyuncs.com");
-            this.client = new Client(config);
+            Config config = new Config();
+            config.setType("access_key");
+            config.setAccessKeyId(properties.getAliyun().getAccessKeyId());
+            config.setAccessKeySecret(properties.getAliyun().getAccessKeySecret());
+
+            com.aliyun.credentials.Client credential = new com.aliyun.credentials.Client(config);
+
+            com.aliyun.teaopenapi.models.Config modelConfig = new com.aliyun.teaopenapi.models.Config();
+            modelConfig.setCredential(credential);
+            modelConfig.setEndpoint("alidns.aliyuncs.com");
+
+            this.client = new Client(modelConfig);
             log.info("Aliyun DNS client initialized successfully");
         } catch (Exception e) {
             log.error("Failed to initialize Aliyun DNS client", e);
