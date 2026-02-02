@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  ks-gateway-autodns-agent:
+    image: veater/ks-gateway-autodns-agent:latest
+    container_name: ks-gateway-autodns-agent
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      # Server URL for reporting public IP
+      - SERVER_URL=${SERVER_URL}
+      
+      # API token for authentication
+      - API_TOKEN=${API_TOKEN}
+      
+      # Check interval in seconds (default: 5)
+      - CHECK_INTERVAL=${CHECK_INTERVAL:-5}
+      
+      # Network interface to monitor (required, e.g., eth0, ens33, enp0s3)
+      - NETWORK_INTERFACE=${NETWORK_INTERFACE}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

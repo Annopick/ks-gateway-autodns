@@ -1,0 +1,117 @@
+replicaCount: 1
+
+image:
+  repository: veater/ks-gateway-autodns-server
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# AutoDNS Configuration
+config:
+  ingressClassPrefix: "kubesphere-router-namespace-"
+  hostSuffix: "-k8s.jsccb.ltd"
+  kubesphereNamespace: "kubesphere-controls-system"
+  ingressClassSuffix: "-namespace"
+  externalDomainSuffix: "-nj.jsccb.ltd"
+  recordRetentionDays: 365
+
+# Database Configuration
+mysql:
+  enabled: true
+  image:
+    repository: mysql
+    tag: "8.0"
+    pullPolicy: IfNotPresent
+  auth:
+    rootPassword: "autodns123"
+    database: "autodns"
+    username: "autodns"
+    password: "autodns123"
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+database:
+  url: "jdbc:mysql://{{ include \"ks-gateway-autodns-server.fullname\" . }}-mysql:3306/autodns?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+  username: "autodns"
+  password: "autodns123"
+
+# Aliyun Configuration
+aliyun:
+  accessKeyId: ""
+  accessKeySecret: ""
+  domain: "jsccb.ltd"
+  regionId: "cn-hangzhou"
+
+# APISIX Configuration
+apisix:
+  adminUrl: "http://apisix-admin:9180"
+  adminKey: ""
+
+# Security Configuration
+security:
+  apiToken: ""
+
+# RBAC Configuration
+rbac:
+  create: true
+  rules:
+    - apiGroups: ["networking.k8s.io"]
+      resources: ["ingresses", "ingressclasses"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["services", "nodes"]
+      verbs: ["get", "list", "watch"]

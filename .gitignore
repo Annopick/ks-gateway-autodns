@@ -1,0 +1,17 @@
+.git
+.github
+*.log
+*.tmp
+target/
+.mvn/wrapper/maven-wrapper.jar
+.env
+*.swp
+*.swo
+*~
+.DS_Store
+.mcp.json
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
