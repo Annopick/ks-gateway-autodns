@@ -11,7 +11,11 @@ data:
   INGRESS_CLASS_SUFFIX: {{ .Values.config.ingressClassSuffix | quote }}
   EXTERNAL_DOMAIN_SUFFIX: {{ .Values.config.externalDomainSuffix | quote }}
   RECORD_RETENTION_DAYS: {{ .Values.config.recordRetentionDays | quote }}
+  {{- if .Values.mysql.enabled }}
+  DB_URL: {{ printf "jdbc:mysql://%s-mysql:3306/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" (include "ks-gateway-autodns-server.fullname" .) .Values.mysql.auth.database | quote }}
+  {{- else }}
   DB_URL: {{ .Values.database.url | quote }}
+  {{- end }}
   DB_USERNAME: {{ .Values.database.username | quote }}
   ALIYUN_DOMAIN: {{ .Values.aliyun.domain | quote }}
   ALIYUN_REGION_ID: {{ .Values.aliyun.regionId | quote }}

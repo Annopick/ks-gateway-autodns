@@ -35,7 +35,7 @@ spec:
         - sh
         - -c
         - |
-          until nc -z {{ include "ks-gateway-autodns-server.fullname" . }}-mysql 3306; do
+          until wget -q -O- {{ include "ks-gateway-autodns-server.fullname" . }}-mysql:3306 2>&1 | grep -q "mysql"; do
             echo "Waiting for MySQL to be ready..."
             sleep 2
           done

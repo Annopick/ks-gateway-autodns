@@ -85,7 +85,7 @@ mysql:
       memory: 256Mi
 
 database:
-  url: "jdbc:mysql://{{ include \"ks-gateway-autodns-server.fullname\" . }}-mysql:3306/autodns?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+  url: "jdbc:mysql://RELEASE-NAME-ks-gateway-autodns-server-mysql:3306/autodns?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
   username: "autodns"
   password: "autodns123"
 
