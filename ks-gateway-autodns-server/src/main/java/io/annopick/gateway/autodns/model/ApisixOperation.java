@@ -16,16 +16,16 @@ public class ApisixOperation {
     @Column(nullable = false, length = 20)
     private String operation;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String upstreamHost;
 
     @Column(nullable = false, length = 255)
     private String externalHost;
 
-    @Column(nullable = false)
+    @Column
     private Integer nodePort;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String requestBody;
 
     @Column(columnDefinition = "TEXT")
