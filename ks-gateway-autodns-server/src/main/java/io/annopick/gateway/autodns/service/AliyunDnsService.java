@@ -49,7 +49,7 @@ public class AliyunDnsService {
             
             AddDomainRecordResponse response = client.addDomainRecord(request);
             String recordId = response.getBody().getRecordId();
-            log.info("Added DNS record: {} -> {}, RecordId: {}", rr, value, recordId);
+            log.info("Added DNS record: {} -> {}, RecordId: {}, ResponseCode: {}", rr, value, recordId, response.getStatusCode());
             return recordId;
         } catch (Exception e) {
             log.error("Failed to add DNS record: {} -> {}", rr, value, e);
@@ -64,9 +64,10 @@ public class AliyunDnsService {
                 .setRR(rr)
                 .setType(type)
                 .setValue(value);
-            
-            client.updateDomainRecord(request);
-            log.info("Updated DNS record: {} -> {}, RecordId: {}", rr, value, recordId);
+
+            UpdateDomainRecordResponse response =  client.updateDomainRecord(request);
+            log.info("Updated DNS record: {} -> {}, RecordId: {}, ResponseCode: {}",
+                    rr, value, recordId, response.getStatusCode());
             return true;
         } catch (Exception e) {
             log.error("Failed to update DNS record: {} -> {}, RecordId: {}", rr, value, recordId, e);
@@ -78,9 +79,12 @@ public class AliyunDnsService {
         try {
             DeleteDomainRecordRequest request = new DeleteDomainRecordRequest()
                 .setRecordId(recordId);
-            
-            client.deleteDomainRecord(request);
-            log.info("Deleted DNS record, RecordId: {}", recordId);
+
+            DeleteDomainRecordResponse response = client.deleteDomainRecord(request);
+            log.info("Deleted DNS record, RecordId: {}, RequestId:{}, ResponseCode: {}",
+                    recordId,
+                    response.getBody().getRequestId(),
+                    response.getStatusCode());
             return true;
         } catch (Exception e) {
             log.error("Failed to delete DNS record, RecordId: {}", recordId, e);
