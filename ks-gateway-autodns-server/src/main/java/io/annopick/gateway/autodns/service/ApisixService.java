@@ -78,7 +78,8 @@ public class ApisixService {
         Map<String, Object> upstream = new HashMap<>();
         upstream.put("type", "roundrobin");
         upstream.put("scheme", "http");
-        upstream.put("pass_host", "pass");
+        upstream.put("pass_host", "rewrite");
+        upstream.put("upstream_host", upstreamHost);
 
         Map<String, Object> nodes = new HashMap<>();
         nodes.put(upstreamHost + ":" + nodePort, 1);
