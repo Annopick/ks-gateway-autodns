@@ -193,6 +193,7 @@ public class IngressWatcher {
         }
     }
 
+    @Transactional
     private void handleDelete(String host) {
         try {
             Optional<DnsRecord> existingRecord = dnsRecordRepository.findByHost(host);
