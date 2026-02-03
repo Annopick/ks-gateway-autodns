@@ -42,17 +42,17 @@ public class IngressWatcher {
         informer.addEventHandler(new ResourceEventHandler<Ingress>() {
             @Override
             public void onAdd(Ingress ingress) {
-                processIngress(ingress, "ADD");
+                processIngress(ingress, null, "ADD");
             }
 
             @Override
             public void onUpdate(Ingress oldIngress, Ingress newIngress) {
-                processIngress(newIngress, "UPDATE");
+                processIngress(newIngress, oldIngress, "UPDATE");
             }
 
             @Override
             public void onDelete(Ingress ingress, boolean deletedFinalStateUnknown) {
-                processIngress(ingress, "DELETE");
+                processIngress(ingress, null, "DELETE");
             }
         });
 
@@ -60,7 +60,7 @@ public class IngressWatcher {
     }
 
     @Transactional
-    public void processIngress(Ingress ingress, String action) {
+    public void processIngress(Ingress ingress, Ingress oldIngress, String action) {
         try {
             String ingressClassName = ingress.getSpec().getIngressClassName();
             if (ingressClassName == null || !ingressClassName.startsWith(properties.getIngressClassPrefix())) {
@@ -71,6 +71,22 @@ public class IngressWatcher {
                 .map(rule -> rule.getHost())
                 .filter(host -> host != null && host.endsWith(properties.getHostSuffix()))
                 .collect(Collectors.toList());
+
+            // Handle UPDATE: detect removed hosts
+            if ("UPDATE".equals(action) && oldIngress != null) {
+                List<String> oldHosts = oldIngress.getSpec().getRules().stream()
+                    .map(rule -> rule.getHost())
+                    .filter(host -> host != null && host.endsWith(properties.getHostSuffix()))
+                    .collect(Collectors.toList());
+                
+                // Find hosts that were removed in the update
+                for (String oldHost : oldHosts) {
+                    if (!hosts.contains(oldHost)) {
+                        log.info("Detected host removal in UPDATE: {}", oldHost);
+                        handleDelete(oldHost);
+                    }
+                }
+            }
 
             if (hosts.isEmpty()) {
                 return;
