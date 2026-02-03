@@ -216,29 +216,33 @@ public class IngressWatcher {
             }
             
             String publicIp = publicIpRecord.get().getIpAddress();
-            log.info("Managing public DNS record: {} -> {}", externalHost, publicIp);
+            
+            // Determine record type based on IP version
+            String recordType = isIPv6(publicIp) ? "AAAA" : "A";
+            
+            log.info("Managing public DNS record: {} -> {} (Type: {})", externalHost, publicIp, recordType);
             
             // Check if public DNS record already exists
             var existingPublicRecord = aliyunDnsService.queryDomainRecord(externalRr);
             
             if (existingPublicRecord != null) {
-                // Update if IP changed
-                if (!publicIp.equals(existingPublicRecord.getValue())) {
+                // Update if IP changed or record type changed
+                if (!publicIp.equals(existingPublicRecord.getValue()) || !recordType.equals(existingPublicRecord.getType())) {
                     boolean success = aliyunDnsService.updateDomainRecord(
-                        existingPublicRecord.getRecordId(), externalRr, "A", publicIp);
+                        existingPublicRecord.getRecordId(), externalRr, recordType, publicIp);
                     if (success) {
-                        log.info("Updated public DNS record: {} -> {}", externalHost, publicIp);
+                        log.info("Updated public DNS record: {} -> {} (Type: {})", externalHost, publicIp, recordType);
                     } else {
                         log.error("Failed to update public DNS record for {}", externalHost);
                     }
                 } else {
-                    log.debug("Public DNS record {} already points to correct IP {}", externalHost, publicIp);
+                    log.debug("Public DNS record {} already points to correct IP {} with type {}", externalHost, publicIp, recordType);
                 }
             } else {
                 // Create new public DNS record
-                String recordId = aliyunDnsService.addDomainRecord(externalRr, "A", publicIp);
+                String recordId = aliyunDnsService.addDomainRecord(externalRr, recordType, publicIp);
                 if (recordId != null) {
-                    log.info("Created public DNS record: {} -> {} (RecordId: {})", externalHost, publicIp, recordId);
+                    log.info("Created public DNS record: {} -> {} (Type: {}, RecordId: {})", externalHost, publicIp, recordType, recordId);
                 } else {
                     log.error("Failed to create public DNS record for {}", externalHost);
                 }
@@ -246,6 +250,10 @@ public class IngressWatcher {
         } catch (Exception e) {
             log.error("Failed to manage public DNS record for host: {}", host, e);
         }
+    }
+    
+    private boolean isIPv6(String ip) {
+        return ip != null && ip.contains(":");
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
