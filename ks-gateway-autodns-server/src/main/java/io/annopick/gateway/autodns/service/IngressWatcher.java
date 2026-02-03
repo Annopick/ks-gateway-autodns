@@ -12,6 +12,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.InetAddress;
@@ -193,12 +194,16 @@ public class IngressWatcher {
         }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void handleDelete(String host) {
         try {
             Optional<DnsRecord> existingRecord = dnsRecordRepository.findByHost(host);
             if (existingRecord.isPresent()) {
                 DnsRecord record = existingRecord.get();
+                
+                // Delete APISIX route first (before database)
+                String externalHost = host.replace(properties.getHostSuffix(), properties.getExternalDomainSuffix());
+                apisixService.deleteRoute(externalHost);
                 
                 boolean dnsDeleteSuccess = aliyunDnsService.deleteDomainRecord(record.getRecordId());
                 if (!dnsDeleteSuccess) {
@@ -207,13 +212,12 @@ public class IngressWatcher {
                 
                 // Delete from database regardless of DNS API result
                 dnsRecordRepository.deleteByHost(host);
-
-                String externalHost = host.replace(properties.getHostSuffix(), properties.getExternalDomainSuffix());
-                apisixService.deleteRoute(externalHost);
                 
                 if (!dnsDeleteSuccess) {
                     log.error("DNS delete failed for host {}, but database and APISIX were updated. Manual DNS cleanup may be required.", host);
                 }
+                
+                log.info("Successfully deleted all resources for host: {}", host);
             }
         } catch (Exception e) {
             log.error("Failed to handle delete for host: {}", host, e);
